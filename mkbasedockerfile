@@ -8,10 +8,10 @@ docker run --rm repronim/neurodocker:latest generate docker \
     --ants version=2.4.3 \
 > neurodockerbase.Dockerfile
 
-    #--miniconda \
-    #    version=latest \
-    #    env_name=neuro \
-    #    env_exists=false \
-    #    conda_install=pandas \
-    #    pip_install=scipy \
+#    --miniconda \
+#        version=latest \
+#        mamba=true \
+#        env_name=neuro \
+#        conda_install="python=3.12" \
+#        pip_install="s3fs awscli" \
 #git clone https://github.com/lncd/lncdtools

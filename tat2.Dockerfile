@@ -4,6 +4,9 @@ RUN apt-get update -qq \
            git \
     && rm -rf /var/lib/apt/lists/* 
 
+# install AWS tools
+RUN pip install s3fs awscli
+
 # Create a shared $HOME directory
 RUN useradd \
     --create-home \
