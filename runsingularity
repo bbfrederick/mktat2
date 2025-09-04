@@ -1,0 +1,10 @@
+#!/bin/bash
+
+module load apptainer
+
+apptainer run \
+    -B /data/frederic/tat2test:/data \
+    /data/frederic/tat2.sif \
+        tat2 \
+            /data/inputfile.nii.gz \
+            /data/outputfile

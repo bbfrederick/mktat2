@@ -1,0 +1,7 @@
+#!/bin/bash
+
+module load apptainer
+
+apptainer build \
+    /data/frederic/tat2.sif \
+    docker://fredericklab/tat2:latest
