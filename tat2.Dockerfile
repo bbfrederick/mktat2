@@ -21,7 +21,10 @@ ENV HOME="/home/neurodocker"
 
 # set to non-root user
 USER neurodocker
+
+# install tat2
 RUN git clone https://github.com/lncd/lncdtools
+RUN ln -s /opt/afni/bin/3dBrickStat /home/neurodocker/lncdtools/3dBrickStat
 
 RUN echo 'export PATH=${PATH}:/home/neurodocker/lncdtools' >> /home/neurodocker/.bashrc
 
