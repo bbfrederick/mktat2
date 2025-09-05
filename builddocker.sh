@@ -14,7 +14,7 @@ IMAGE=tat2
 # bump version
 version=`cat VERSION | sed 's/+/ /g' | sed 's/v//g' | awk '{print $1}'`
 echo "version: $version"
-version=v0.0.2
+version=latest
 
 # run build
 docker buildx build . \

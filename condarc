@@ -1,7 +1,0 @@
-channels:
-  - conda-forge
-channel_priority: strict
-changeps1: false
-channel_alias: https://anaconda.mgb.org/
-ssl_verify: false
-solver: libmamba

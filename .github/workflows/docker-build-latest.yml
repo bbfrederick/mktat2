@@ -77,7 +77,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: fredericklab/rapidtide
+          images: fredericklab/tat2
 
       - name: Free disk space
         run: | 
@@ -100,7 +100,7 @@ jobs:
           provenance: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          tags: fredericklab/neurodockerbase:latest
+          tags: fredericklab/tat2:latest
           build-args: |
             BRANCH=${{ env.BRANCH }}
             GITVERSION=${{ env.GITVERSION }}
