@@ -5,7 +5,7 @@ docker run --rm repronim/neurodocker:latest generate docker \
     --base-image debian:bullseye-slim \
     --yes \
     --fsl version=6.0.7.8 \
-    --ants version=2.4.3 \
+    --afni \
 > neurodockerbase.Dockerfile
 
 #    --miniconda \
