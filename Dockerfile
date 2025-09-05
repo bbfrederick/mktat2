@@ -24,7 +24,7 @@ USER neurodocker
 RUN git clone https://github.com/lncd/lncdtools
 
 COPY ./3dBrickStat /home/neurodocker/lncdtools
-RUN chmod a+x /home/neurodocker/lncdtools
+RUN chmod a+x /home/neurodocker/lncdtools/3dBrickStat
 
 RUN echo 'export PATH=${PATH}:/home/neurodocker/lncdtools' >> /home/neurodocker/.bashrc
 
