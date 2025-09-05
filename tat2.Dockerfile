@@ -5,7 +5,7 @@ RUN apt-get update -qq \
     && rm -rf /var/lib/apt/lists/* 
 
 # install AWS tools
-RUN pip install s3fs awscli
+RUN pip install numpy s3fs awscli
 
 # Create a shared $HOME directory
 RUN useradd \
