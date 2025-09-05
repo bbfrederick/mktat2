@@ -64,90 +64,53 @@ RUN apt-get update -qq \
     && rm -rf /var/lib/apt/lists/* \
     && echo "Installing FSL ..." \
     && curl -fsSL https://fsl.fmrib.ox.ac.uk/fsldownloads/fslconda/releases/fslinstaller.py | python3 - -d /opt/fsl-6.0.7.8 -V 6.0.7.8
-ENV ANTSPATH="/opt/ants-2.4.3/" \
-    PATH="/opt/ants-2.4.3:$PATH"
+ENV PATH="/opt/afni-latest:$PATH" \
+    AFNI_PLUGINPATH="/opt/afni-latest"
 RUN apt-get update -qq \
     && apt-get install -y -q --no-install-recommends \
            ca-certificates \
+           cmake \
            curl \
-           unzip \
+           ed \
+           gsl-bin \
+           libcurl4-openssl-dev \
+           libgl1-mesa-dri \
+           libglib2.0-0 \
+           libglu1-mesa-dev \
+           libglw1-mesa \
+           libgomp1 \
+           libjpeg-turbo8-dev \
+           libjpeg62 \
+           libssl-dev \
+           libudunits2-dev \
+           libxm4 \
+           multiarch-support \
+           netpbm \
+           python-is-python3 \
+           python3-pip \
+           tcsh \
+           xfonts-base \
+           xvfb \
     && rm -rf /var/lib/apt/lists/* \
-    && echo "Downloading ANTs ..." \
-    && curl -fsSL -o ants.zip https://github.com/ANTsX/ANTs/releases/download/v2.4.3/ants-2.4.3-centos7-X64-gcc.zip \
-    && unzip ants.zip -d /opt \
-    && mv /opt/ants-2.4.3/bin/* /opt/ants-2.4.3 \
-    && rm ants.zip
+    && _reproenv_tmppath="$(mktemp -t tmp.XXXXXXXXXX.deb)" \
+    && curl -fsSL --retry 5 -o "${_reproenv_tmppath}" http://mirrors.kernel.org/debian/pool/main/libx/libxp/libxp6_1.0.2-2_amd64.deb \
+    && apt-get install --yes -q "${_reproenv_tmppath}" \
+    && rm "${_reproenv_tmppath}" \
+    && _reproenv_tmppath="$(mktemp -t tmp.XXXXXXXXXX.deb)" \
+    && curl -fsSL --retry 5 -o "${_reproenv_tmppath}" http://snapshot.debian.org/archive/debian-security/20160113T213056Z/pool/updates/main/libp/libpng/libpng12-0_1.2.49-1%2Bdeb7u2_amd64.deb \
+    && apt-get install --yes -q "${_reproenv_tmppath}" \
+    && rm "${_reproenv_tmppath}" \
+    && apt-get update -qq \
+    && apt-get install --yes --quiet --fix-missing \
+    && rm -rf /var/lib/apt/lists/* \
+    && gsl_path="$(find / -name 'libgsl.so.??' || printf '')" \
+    && if [ -n "$gsl_path" ]; then \
+         ln -sfv "$gsl_path" "$(dirname $gsl_path)/libgsl.so.0"; \
+    fi \
+    && ldconfig \
+    && mkdir -p /opt/afni-latest \
+    && echo "Downloading AFNI ..." \
+    && curl -fL https://afni.nimh.nih.gov/pub/dist/tgz/linux_openmp_64.tgz \
+    | tar -xz -C /opt/afni-latest --strip-components 1
 ENTRYPOINT ["/neurodocker/startup.sh"]
 
-# Save specification to JSON.
-RUN printf '{ \
-  "pkg_manager": "apt", \
-  "existing_users": [ \
-    "root" \
-  ], \
-  "instructions": [ \
-    { \
-      "name": "from_", \
-      "kwds": { \
-        "base_image": "debian:bullseye-slim" \
-      } \
-    }, \
-    { \
-      "name": "env", \
-      "kwds": { \
-        "LANG": "en_US.UTF-8", \
-        "LC_ALL": "en_US.UTF-8", \
-        "ND_ENTRYPOINT": "/neurodocker/startup.sh" \
-      } \
-    }, \
-    { \
-      "name": "run", \
-      "kwds": { \
-        "command": "export ND_ENTRYPOINT=\\"/neurodocker/startup.sh\\"\\napt-get update -qq\\napt-get install -y -q --no-install-recommends \\\\\\n    apt-utils \\\\\\n    bzip2 \\\\\\n    ca-certificates \\\\\\n    curl \\\\\\n    locales \\\\\\n    unzip\\nrm -rf /var/lib/apt/lists/*\\nsed -i -e '"'"'s/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/'"'"' /etc/locale.gen\\ndpkg-reconfigure --frontend=noninteractive locales\\nupdate-locale LANG=\\"en_US.UTF-8\\"\\nchmod 777 /opt && chmod a+s /opt\\nmkdir -p /neurodocker\\nif [ ! -f \\"$ND_ENTRYPOINT\\" ]; then\\n  echo '"'"'#!/usr/bin/env bash'"'"' >> \\"$ND_ENTRYPOINT\\"\\n  echo '"'"'set -e'"'"' >> \\"$ND_ENTRYPOINT\\"\\n  echo '"'"'export USER=\\"${USER:=`whoami`}\\"'"'"' >> \\"$ND_ENTRYPOINT\\"\\n  echo '"'"'if [ -n \\"$1\\" ]; then \\"$@\\"; else /usr/bin/env bash; fi'"'"' >> \\"$ND_ENTRYPOINT\\";\\nfi\\nchmod -R 777 /neurodocker && chmod a+s /neurodocker" \
-      } \
-    }, \
-    { \
-      "name": "env", \
-      "kwds": { \
-        "FSLDIR": "/opt/fsl-6.0.7.8", \
-        "PATH": "/opt/fsl-6.0.7.8/bin:$PATH", \
-        "FSLOUTPUTTYPE": "NIFTI_GZ", \
-        "FSLMULTIFILEQUIT": "TRUE", \
-        "FSLTCLSH": "/opt/fsl-6.0.7.8/bin/fsltclsh", \
-        "FSLWISH": "/opt/fsl-6.0.7.8/bin/fslwish", \
-        "FSLLOCKDIR": "", \
-        "FSLMACHINELIST": "", \
-        "FSLREMOTECALL": "", \
-        "FSLGECUDAQ": "cuda.q" \
-      } \
-    }, \
-    { \
-      "name": "run", \
-      "kwds": { \
-        "command": "apt-get update -qq\\napt-get install -y -q --no-install-recommends \\\\\\n    bc \\\\\\n    ca-certificates \\\\\\n    curl \\\\\\n    dc \\\\\\n    file \\\\\\n    libfontconfig1 \\\\\\n    libfreetype6 \\\\\\n    libgl1-mesa-dev \\\\\\n    libgl1-mesa-dri \\\\\\n    libglu1-mesa-dev \\\\\\n    libgomp1 \\\\\\n    libice6 \\\\\\n    libopenblas-base \\\\\\n    libxcursor1 \\\\\\n    libxft2 \\\\\\n    libxinerama1 \\\\\\n    libxrandr2 \\\\\\n    libxrender1 \\\\\\n    libxt6 \\\\\\n    nano \\\\\\n    python3 \\\\\\n    sudo \\\\\\n    wget\\nrm -rf /var/lib/apt/lists/*\\n\\necho \\"Installing FSL ...\\"\\ncurl -fsSL https://fsl.fmrib.ox.ac.uk/fsldownloads/fslconda/releases/fslinstaller.py | python3 - -d /opt/fsl-6.0.7.8 -V 6.0.7.8" \
-      } \
-    }, \
-    { \
-      "name": "env", \
-      "kwds": { \
-        "ANTSPATH": "/opt/ants-2.4.3/", \
-        "PATH": "/opt/ants-2.4.3:$PATH" \
-      } \
-    }, \
-    { \
-      "name": "run", \
-      "kwds": { \
-        "command": "apt-get update -qq\\napt-get install -y -q --no-install-recommends \\\\\\n    ca-certificates \\\\\\n    curl \\\\\\n    unzip\\nrm -rf /var/lib/apt/lists/*\\necho \\"Downloading ANTs ...\\"\\ncurl -fsSL -o ants.zip https://github.com/ANTsX/ANTs/releases/download/v2.4.3/ants-2.4.3-centos7-X64-gcc.zip\\nunzip ants.zip -d /opt\\nmv /opt/ants-2.4.3/bin/* /opt/ants-2.4.3\\nrm ants.zip" \
-      } \
-    }, \
-    { \
-      "name": "entrypoint", \
-      "kwds": { \
-        "args": [ \
-          "/neurodocker/startup.sh" \
-        ] \
-      } \
-    } \
-  ] \
-}' > /.reproenv.json
-# End saving to specification to JSON.
