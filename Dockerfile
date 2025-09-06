@@ -25,4 +25,4 @@ RUN git clone https://github.com/lncd/lncdtools
 
 RUN echo 'export PATH=/home/neurodocker/lncdtools:/opt/afni-latest:/opt/fsl-6.0.7.8:${PATH}' >> /home/neurodocker/.bashrc
 
-ENTRYPOINT ["/bin/bash"]
+#ENTRYPOINT ["/bin/bash"]
