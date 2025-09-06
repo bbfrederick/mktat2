@@ -23,10 +23,6 @@ ENV HOME="/home/neurodocker"
 USER neurodocker
 RUN git clone https://github.com/lncd/lncdtools
 
-COPY ./3dBrickStat /home/neurodocker/lncdtools
-RUN chmod a+x /home/neurodocker/lncdtools/3dBrickStat
+RUN echo 'export PATH=/home/neurodocker/lncdtools:/opt/afni-latest:/opt/fsl-6.0.7.8:${PATH}' >> /home/neurodocker/.bashrc
 
-RUN echo 'export PATH=${PATH}:/home/neurodocker/lncdtools' >> /home/neurodocker/.bashrc
-
-ENTRYPOINT ["/neurodocker/startup.sh"]
-
+ENTRYPOINT ["/bin/bash"]
