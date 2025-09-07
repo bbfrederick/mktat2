@@ -16,7 +16,7 @@ RUN cd /opt \
 ENV PATH="/opt/lncdtools:/opt/afni-latest:$PATH"
 
 # put a copy of 3dBrickStat in the lncdtools directory
-RUN cp /opt/afni-latest/3dBrickStat /opt/lncdtools
+#RUN cp /opt/afni-latest/3dBrickStat /opt/lncdtools
 
 # fix the root path
 RUN echo 'export PATH=/opt/lncdtools:/opt/afni-latest:/opt/fsl-6.0.7.8/bin:${PATH}' >> /root/.bashrc
