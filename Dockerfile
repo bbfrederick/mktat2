@@ -15,6 +15,12 @@ RUN cd /opt \
     && git clone https://github.com/lncd/lncdtools
 ENV PATH="/opt/lncdtools:/opt/afni-latest:$PATH"
 
+# put a copy of 3dBrickStat in the lncdtools directory
+RUN cp /opt/afni-latest/3dBrickStat /opt/lncdtools
+
+# fix the root path
+RUN echo 'export PATH=/opt/lncdtools:/opt/afni-latest:${PATH}' >> /root/.bashrc
+
 ## Create a shared $HOME directory
 #RUN useradd \
 #    --create-home \
