@@ -19,7 +19,7 @@ ENV PATH="/opt/lncdtools:/opt/afni-latest:$PATH"
 RUN cp /opt/afni-latest/3dBrickStat /opt/lncdtools
 
 # fix the root path
-RUN echo 'export PATH=/opt/lncdtools:/opt/afni-latest:${PATH}' >> /root/.bashrc
+RUN echo 'export PATH=/opt/lncdtools:/opt/afni-latest:/opt/fsl-6.0.7.8/bin:${PATH}' >> /root/.bashrc
 
 ## Create a shared $HOME directory
 #RUN useradd \
